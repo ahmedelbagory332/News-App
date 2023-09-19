@@ -2,7 +2,7 @@ package com.example.presentation.screens.onboardingScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.OnBoardingStatus
+import com.example.domain.model.OnBoardingModel
 import com.example.domain.use_cases.SaveOnBoardingStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +44,7 @@ class OnboardingViewModel @Inject constructor(
     fun saveOnBoardingStatus() {
         viewModelScope.launch {
             saveOnBoardingStatusUseCase(
-                OnBoardingStatus(
+                OnBoardingModel(
                     firstTime = false,
                     country = _viewState.value.selectedCountry,
                     categories = _viewState.value.favoriteCategories.map { it.name }.toSet()

@@ -4,4 +4,8 @@
     <string name="get_started">أبدا</string>
     <string name="choose_your_favorite_categories">اختر الفئات المفضلة لديك:</string>
     <string name="choose_your_favorite_country">اختر بلدك المفضل:</string>
+    <string name="loading">جاري التحميل...</string>
+    <string name="your_category">"فئاتك المفضله : "</string>
+    <string name="head_lines">العناوين الرئيسية</string>
+    <string name="there_is_no_description_click_and_open_article">لا يوجد وصف، انقر و أفتح المقالة</string>
 </resources>

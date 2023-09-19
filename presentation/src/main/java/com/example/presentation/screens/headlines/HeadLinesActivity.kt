@@ -3,26 +3,44 @@ package com.example.presentation.screens.headlines
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.example.presentation.R
+import com.example.presentation.screens.headlines.component.ItemArticle
+import com.example.presentation.screens.headlines.component.UserFavCategories
+import com.example.presentation.screens.onboardingScreen.countries
 import com.example.presentation.theme.NewsAppTheme
+import com.example.presentation.theme.darkWhite
 import com.example.presentation.theme.grey
-import com.example.presentation.utils.CustomToolbar
+import com.example.presentation.utils.ErrorHolder
+import com.example.presentation.utils.LoadingIndicator
+import com.example.presentation.utils.TopBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class HeadLinesActivity : ComponentActivity() {
+    private val viewModel: HeadLinesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,32 +50,75 @@ class HeadLinesActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = grey
                 ) {
-                    Column {
-                        CustomToolbar(
-                            label = "head lines",
-
-                            textStyle = TextStyle(color = Color.Black),
-                            actions = {
-                                Row {
-                                    IconButton(
-                                        onClick = {
-
-                                        },
-                                    ) {
-                                        Icon(Icons.Filled.Search, "Search")
-
-                                    }
-                                    // icon for localization later
-                                }
-                            },
-                        )
-                        Text(text = "welcome to headline")
-
-                    }
+                    HeadLinesScreen()
                 }
             }
         }
     }
+
+
+    @Composable
+    fun HeadLinesScreen() {
+        Column(
+            modifier = Modifier
+                .background(darkWhite)
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            Surface(shadowElevation = 3.dp) {
+                TopBar(
+                    title = stringResource(R.string.head_lines),
+                    menu = {
+                        IconButton(onClick = {
+
+                        }) {
+                            Icon(Icons.Filled.Search, "search")
+                        }
+                    }
+                )
+            }
+
+            UserFavCategories(viewModel) { category ->
+                countries[viewModel.onBoardingStatus.value.country]?.let { viewModel.getRemoteHeadLines(it,category) }
+            }
+            HeadLines(viewModel)
+
+        }
+
+
+    }
+
+    @Composable
+    fun HeadLines(headLinesViewModel: HeadLinesViewModel) {
+        if (headLinesViewModel.headLines.value.isLoading) {
+            LoadingIndicator()
+        } else if (headLinesViewModel.headLines.value.headLines.isNotEmpty()) {
+
+            LazyColumn {
+                items(headLinesViewModel.headLines.value.headLines) { article ->
+                    ItemArticle(article)
+                }
+            }
+        } else if (headLinesViewModel.headLines.value.error.isNotEmpty()) {
+            ErrorHolder(text = headLinesViewModel.headLines.value.error)
+        }else if (headLinesViewModel.headLines.value.headLines.isEmpty()) {
+
+            Column(
+                modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.no_result),
+                    contentDescription = "no_result",
+                    modifier = Modifier.size(width = 250.dp, height = 250.dp)
+                )
+            }
+        }
+
+    }
+
+
 }
 
 

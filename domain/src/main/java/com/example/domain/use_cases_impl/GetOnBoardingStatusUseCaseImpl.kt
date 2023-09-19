@@ -1,6 +1,6 @@
 package com.example.domain.use_cases_impl
 
-import com.example.domain.model.OnBoardingStatus
+import com.example.domain.model.OnBoardingModel
 import com.example.domain.repositories.SaveOnBoardingStatusRepository
 import com.example.domain.use_cases.GetOnBoardingStatusUseCase
 import javax.inject.Inject
@@ -12,7 +12,7 @@ class GetOnBoardingStatusUseCaseImpl @Inject constructor(
 
 
 
-    override fun invoke(): OnBoardingStatus {
+    override fun invoke(): OnBoardingModel {
          return saveOnBoardingStatusRepository.getOnBoardingStatus()
     }
 }

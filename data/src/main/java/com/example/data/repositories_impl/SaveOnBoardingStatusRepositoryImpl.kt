@@ -1,7 +1,7 @@
 package com.example.data.repositories_impl
 
 import android.content.SharedPreferences
-import com.example.domain.model.OnBoardingStatus
+import com.example.domain.model.OnBoardingModel
 import com.example.domain.repositories.SaveOnBoardingStatusRepository
 import javax.inject.Inject
 
@@ -11,21 +11,21 @@ class SaveOnBoardingStatusRepositoryImpl @Inject constructor(private val sharedP
 
 
     override fun saveOnBoardingStatus(
-        onBoardingStatus: OnBoardingStatus
+        onBoardingModel: OnBoardingModel
     ) {
 
         sharedPreferences.edit()
-            .putBoolean("firstTime", onBoardingStatus.firstTime)
-            .putString("country", onBoardingStatus.country)
-            .putStringSet("categories", onBoardingStatus.categories)
+            .putBoolean("firstTime", onBoardingModel.firstTime)
+            .putString("country", onBoardingModel.country)
+            .putStringSet("categories", onBoardingModel.categories)
             .apply()
     }
 
 
-    override fun getOnBoardingStatus(): OnBoardingStatus {
+    override fun getOnBoardingStatus(): OnBoardingModel {
         val firstTime =  sharedPreferences.getBoolean("firstTime", true)
         val country =  sharedPreferences.getString("country", "")
         val categories =  sharedPreferences.getStringSet("categories", setOf())
-        return OnBoardingStatus(firstTime,country!!,categories!!)
+        return OnBoardingModel(firstTime,country!!,categories!!)
     }
 }

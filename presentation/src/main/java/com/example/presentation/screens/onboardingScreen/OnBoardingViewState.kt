@@ -19,7 +19,7 @@ private val allCategories = listOf(
     Category(7, "technology")
 )
 
-private val countries = hashMapOf(
+ val countries = hashMapOf(
     "United Arab Emirates" to "ae",
     "Argentina" to "ar",
     "Austria" to "at",

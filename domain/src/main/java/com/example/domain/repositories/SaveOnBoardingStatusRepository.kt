@@ -1,11 +1,11 @@
 package com.example.domain.repositories
 
-import com.example.domain.model.OnBoardingStatus
+import com.example.domain.model.OnBoardingModel
 
 interface SaveOnBoardingStatusRepository {
 
-    fun saveOnBoardingStatus(onBoardingStatus: OnBoardingStatus)
+    fun saveOnBoardingStatus(onBoardingModel: OnBoardingModel)
 
-    fun getOnBoardingStatus():OnBoardingStatus
+    fun getOnBoardingStatus():OnBoardingModel
 
 }

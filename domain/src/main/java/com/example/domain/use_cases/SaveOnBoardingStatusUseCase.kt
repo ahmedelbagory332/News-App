@@ -1,8 +1,8 @@
 package com.example.domain.use_cases
 
-import com.example.domain.model.OnBoardingStatus
+import com.example.domain.model.OnBoardingModel
 
 interface SaveOnBoardingStatusUseCase {
 
-    operator fun invoke(onBoardingStatus: OnBoardingStatus)
+    operator fun invoke(onBoardingModel: OnBoardingModel)
 }
