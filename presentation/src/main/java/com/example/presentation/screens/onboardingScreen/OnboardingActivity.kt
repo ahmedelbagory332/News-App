@@ -1,5 +1,6 @@
 package com.example.presentation.screens.onboardingScreen
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -19,15 +20,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.screens.headlines.HeadLinesActivity
 import com.example.presentation.screens.onboardingScreen.component.Categories
 import com.example.presentation.screens.onboardingScreen.component.Countries
 import com.example.presentation.theme.NewsAppTheme
@@ -47,11 +51,14 @@ class OnboardingActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = grey
                 ) {
+                    val viewState = viewModel.viewState.collectAsState()
                     OnboardingScreen(viewModel) {
-                        if (viewModel.favoriteCategories.size > 3 || viewModel.favoriteCategories.size < 3 || viewModel.selectedCountry.isEmpty()) {
-                            Toast.makeText(this, "stop", Toast.LENGTH_SHORT).show()
+                        if (viewState.value.favoriteCategories.size > 3 || viewState.value.favoriteCategories.size < 3 || viewState.value.selectedCountry.isEmpty()) {
+                            Toast.makeText(this, getString(R.string.must_select_3_categories_and_1_country), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(this, "navigate", Toast.LENGTH_SHORT).show()
+                            viewModel.saveOnBoardingStatus()
+                            startActivity(Intent(this,HeadLinesActivity::class.java))
+                            finish()
                         }
                     }
                 }
@@ -93,7 +100,7 @@ fun OnboardingScreen(viewModel: OnboardingViewModel, onboardingComplete: () -> U
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
-                text = "Get Started",
+                text = stringResource(R.string.get_started),
                 style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             )
         }

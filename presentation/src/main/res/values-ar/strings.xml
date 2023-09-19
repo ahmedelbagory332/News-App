@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="must_select_3_categories_and_1_country">يجب ان تختار ثلاث اقسام و بلدة واحدة</string>
+    <string name="get_started">أبدا</string>
+    <string name="choose_your_favorite_categories">اختر الفئات المفضلة لديك:</string>
+    <string name="choose_your_favorite_country">اختر بلدك المفضل:</string>
+</resources>

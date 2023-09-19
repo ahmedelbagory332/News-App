@@ -1,9 +1,14 @@
 package com.example.presentation.screens.onboardingScreen
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.domain.model.OnBoardingStatus
+import com.example.domain.use_cases.SaveOnBoardingStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -11,45 +16,40 @@ data class Category(val id: Int, val name: String)
 
 
 @HiltViewModel
-class OnboardingViewModel  @Inject constructor() : ViewModel(){
+class OnboardingViewModel @Inject constructor(
+    private val saveOnBoardingStatusUseCase: SaveOnBoardingStatusUseCase
+) : ViewModel() {
 
-      val allCategories = listOf(
-        Category(1, "Category 1"),
-        Category(2, "Category 2"),
-        Category(3, "Category 3"),
-        Category(4, "Category 4"),
-        Category(5, "Category 5"),
+    private val _viewState = MutableStateFlow(OnBoardingViewState())
+    val viewState = _viewState.asStateFlow()
 
-    )
 
-    val countries = listOf(
-        "Country 1",
-        "Country 2",
-        "Country 3",
-        "Country 4",
-        "Country 5",
-        "Country 6",
-        "Country 7",
-        "Country 8",
-        "Country 9"
-    )
 
-    private val _favoriteCategories = mutableStateListOf<Category>()
-    val favoriteCategories: List<Category> get() = _favoriteCategories
-
-    private val _selectedCountry = mutableStateOf<String>("")
-    val selectedCountry: String get() = _selectedCountry.value
 
     fun setSelectedCountry(selectedCountry: String) {
-        _selectedCountry.value = selectedCountry
-        _selectedCountry.value = _selectedCountry.value
+        _viewState.update { it.copy(selectedCountry = selectedCountry) }
     }
 
+
     fun toggleFavorite(category: Category) {
-        if (_favoriteCategories.contains(category)) {
-            _favoriteCategories.remove(category)
+        if (_viewState.value.favoriteCategories.contains(category)) {
+            _viewState.update { it.copy(favoriteCategories = _viewState.value.favoriteCategories - category) }
         } else {
-            _favoriteCategories.add(category)
+            _viewState.update { it.copy(favoriteCategories = _viewState.value.favoriteCategories + category) }
+        }
+    }
+
+
+
+    fun saveOnBoardingStatus() {
+        viewModelScope.launch {
+            saveOnBoardingStatusUseCase(
+                OnBoardingStatus(
+                    firstTime = false,
+                    country = _viewState.value.selectedCountry,
+                    categories = _viewState.value.favoriteCategories.map { it.name }.toSet()
+                )
+            )
         }
     }
 }

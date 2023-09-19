@@ -11,26 +11,31 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.presentation.R
 import com.example.presentation.screens.onboardingScreen.Category
 import com.example.presentation.screens.onboardingScreen.OnboardingViewModel
 import com.example.presentation.theme.White
 
 @Composable
  fun Categories(viewModel: OnboardingViewModel) {
+    val viewState = viewModel.viewState.collectAsState()
     Text(
-        "Choose your favorite categories:",
-        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+        stringResource(R.string.choose_your_favorite_categories),
+        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp , color = MaterialTheme.colorScheme.primary),
         modifier = Modifier.padding(10.dp)
     )
-    viewModel.allCategories.forEach { category ->
+    viewState.value.allCategoriesList.forEach { category ->
         Card(
             modifier = Modifier.padding(vertical = 5.dp, horizontal = 15.dp),
             colors = CardDefaults.cardColors(
@@ -43,7 +48,7 @@ import com.example.presentation.theme.White
             ) {
             CategoryItem(
                 category = category,
-                isFavorite = viewModel.favoriteCategories.contains(category),
+                isFavorite = viewState.value.favoriteCategories.contains(category),
                 onToggleFavorite = { viewModel.toggleFavorite(category) }
             )
         }
