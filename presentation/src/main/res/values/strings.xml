@@ -8,4 +8,5 @@
     <string name="your_category">"Your Category : "</string>
     <string name="head_lines">Head Lines</string>
     <string name="there_is_no_description_click_and_open_article">there is no description,click and open article</string>
+    <string name="favorites_articles">Favorites Articles</string>
 </resources>

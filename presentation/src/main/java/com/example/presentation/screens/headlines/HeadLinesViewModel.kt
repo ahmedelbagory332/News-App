@@ -6,12 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.Resource
+import com.example.domain.model.ArticlesModel
 import com.example.domain.model.OnBoardingModel
+import com.example.domain.states.FavArticlesState
 import com.example.domain.states.HeadLinesState
+import com.example.domain.use_cases.DeleteFavArticlesUseCase
+import com.example.domain.use_cases.GetFavArticlesUseCase
 import com.example.domain.use_cases.GetHeadLinesUseCase
 import com.example.domain.use_cases.GetOnBoardingStatusUseCase
+import com.example.domain.use_cases.SaveFavArticlesUseCase
 import com.example.presentation.screens.onboardingScreen.countries
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -23,7 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class HeadLinesViewModel @Inject constructor(
     private val getOnBoardingStatusUseCase: GetOnBoardingStatusUseCase,
-    private val getHeadLinesUseCase: GetHeadLinesUseCase
+    private val getHeadLinesUseCase: GetHeadLinesUseCase,
+    private val getFavArticlesUseCase: GetFavArticlesUseCase,
+    private val deleteFavArticlesUseCase: DeleteFavArticlesUseCase,
+    private val saveFavArticlesUseCase: SaveFavArticlesUseCase,
 ) : ViewModel() {
 
     private val _onBoardingStatus = mutableStateOf(OnBoardingModel())
@@ -34,9 +43,14 @@ class HeadLinesViewModel @Inject constructor(
     val selectedCategory: State<String>
         get() = _selectedCategory
 
+
     private val _state = mutableStateOf(HeadLinesState())
     val headLines: State<HeadLinesState>
         get() = _state
+
+    private val _favState = mutableStateOf(FavArticlesState())
+    val favState: State<FavArticlesState>
+        get() = _favState
 
     fun setSelectedCategory(selectedGenre: String){
         _selectedCategory.value = selectedGenre
@@ -47,6 +61,7 @@ class HeadLinesViewModel @Inject constructor(
 
     init {
         getOnBoardingStatus()
+        getFavArticles()
     }
 
     private fun getOnBoardingStatus() {
@@ -68,7 +83,7 @@ class HeadLinesViewModel @Inject constructor(
                 is Resource.Success -> {
 
                     _state.value = HeadLinesState(
-                        headLines = result.data!!.articles.sortedByDescending { it.publishedAt }
+                        headLines = result.data!!.sortedByDescending { it.publishedAt }
                     )
 
                 }
@@ -83,6 +98,40 @@ class HeadLinesViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
 
+    }
+   private fun getFavArticles() {
+        getFavArticlesUseCase().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+
+                    _favState.value = FavArticlesState(
+                        articles = result.data!!.sortedByDescending { it.publishedAt }
+                    )
+
+                }
+                is Resource.Error -> {
+                    _favState.value = FavArticlesState(
+                        error = result.message ?: "An unexpected error happened"
+                    )
+                }
+                is Resource.Loading -> {
+                    _favState.value = FavArticlesState(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
+
+    }
+
+      fun saveFavArticles(fav: ArticlesModel) {
+        viewModelScope.launch {
+             saveFavArticlesUseCase.invoke(fav)
+        }
+    }
+
+    fun deleteFavArticles(title: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+             deleteFavArticlesUseCase.invoke(title)
+        }
     }
 
 }

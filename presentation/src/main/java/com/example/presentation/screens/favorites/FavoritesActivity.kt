@@ -1,6 +1,5 @@
-package com.example.presentation.screens.headlines
+package com.example.presentation.screens.favorites
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,11 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,10 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
-import com.example.presentation.screens.favorites.FavoritesActivity
-import com.example.presentation.screens.headlines.component.ItemArticle
-import com.example.presentation.screens.headlines.component.UserFavCategories
-import com.example.presentation.screens.onboardingScreen.countries
+import com.example.presentation.screens.favorites.component.FavItemArticle
 import com.example.presentation.theme.NewsAppTheme
 import com.example.presentation.theme.darkWhite
 import com.example.presentation.theme.grey
@@ -42,8 +33,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class HeadLinesActivity : ComponentActivity() {
-    private val viewModel: HeadLinesViewModel by viewModels()
+class FavoritesActivity : ComponentActivity() {
+    private val viewModel: FavoritesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +44,7 @@ class HeadLinesActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = grey
                 ) {
-                    HeadLinesScreen()
+                    FavoritesScreen()
                 }
             }
         }
@@ -61,7 +52,7 @@ class HeadLinesActivity : ComponentActivity() {
 
 
     @Composable
-    fun HeadLinesScreen() {
+    fun FavoritesScreen() {
         Column(
             modifier = Modifier
                 .background(darkWhite)
@@ -70,34 +61,13 @@ class HeadLinesActivity : ComponentActivity() {
         ) {
             Surface(shadowElevation = 3.dp) {
                 TopBar(
-                    title = stringResource(R.string.head_lines),
+                    title = stringResource(R.string.favorites_articles),
                     menu = {
-                        IconButton(
-                            onClick = {
-                                startFavoritesActivity()
-                            }) {
-                            Icon(Icons.Filled.Favorite, "FavoriteBorder")
-                        }
-
-                        IconButton(onClick = {
-
-                        }) {
-                            Icon(Icons.Filled.Search, "search")
-                        }
-
                     }
                 )
             }
 
-            UserFavCategories(viewModel) { category ->
-                countries[viewModel.onBoardingStatus.value.country]?.let {
-                    viewModel.getRemoteHeadLines(
-                        it,
-                        category
-                    )
-                }
-            }
-            HeadLines(viewModel)
+            FavoritesArticles(viewModel)
 
         }
 
@@ -105,24 +75,22 @@ class HeadLinesActivity : ComponentActivity() {
     }
 
     @Composable
-    fun HeadLines(headLinesViewModel: HeadLinesViewModel) {
-        if (headLinesViewModel.headLines.value.isLoading) {
+    fun FavoritesArticles(headLinesViewModel: FavoritesViewModel) {
+        if (headLinesViewModel.favState.value.isLoading) {
             LoadingIndicator()
-        } else if (headLinesViewModel.headLines.value.headLines.isNotEmpty()) {
+        } else if (headLinesViewModel.favState.value.articles.isNotEmpty()) {
 
             LazyColumn {
-                items(headLinesViewModel.headLines.value.headLines) { article ->
-                    ItemArticle(article, headLinesViewModel)
+                items(headLinesViewModel.favState.value.articles) { article ->
+                    FavItemArticle(article,headLinesViewModel)
                 }
             }
-        } else if (headLinesViewModel.headLines.value.error.isNotEmpty()) {
-            ErrorHolder(text = headLinesViewModel.headLines.value.error)
-        } else if (headLinesViewModel.headLines.value.headLines.isEmpty()) {
+        } else if (headLinesViewModel.favState.value.error.isNotEmpty()) {
+            ErrorHolder(text = headLinesViewModel.favState.value.error)
+        }else if (headLinesViewModel.favState.value.articles.isEmpty()) {
 
             Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxHeight().fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -134,11 +102,6 @@ class HeadLinesActivity : ComponentActivity() {
             }
         }
 
-    }
-
-
-    private fun startFavoritesActivity() {
-        startActivity(Intent(this, FavoritesActivity::class.java))
     }
 
 

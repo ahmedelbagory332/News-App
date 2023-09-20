@@ -1,4 +1,4 @@
-package com.example.presentation.screens.headlines.component
+package com.example.presentation.screens.favorites.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,18 +23,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.ArticlesModel
+import com.example.domain.model.FavArticleModel
 import com.example.presentation.R
-import com.example.presentation.screens.headlines.HeadLinesViewModel
+import com.example.presentation.screens.favorites.FavoritesViewModel
 import com.example.presentation.theme.White
 import com.example.presentation.utils.CoilImage
 import com.example.presentation.utils.getTime
 
 
 @Composable
-fun ItemArticle(item: ArticlesModel, headLinesViewModel: HeadLinesViewModel) {
+fun FavItemArticle(item: FavArticleModel, favoritesViewModel: FavoritesViewModel) {
     val uriHandler = LocalUriHandler.current
-    val favArticles = headLinesViewModel.favState.value.articles
+    val favArticles = favoritesViewModel.favState.value.articles
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -69,10 +69,7 @@ fun ItemArticle(item: ArticlesModel, headLinesViewModel: HeadLinesViewModel) {
                     "Favorite",
                     modifier = Modifier
                         .clickable {
-                        if (favArticles.map { it.title }.contains(item.title))
-                            item.title?.let { headLinesViewModel.deleteFavArticles(it) }
-                        else
-                            headLinesViewModel.saveFavArticles(item)
+                            item.title?.let { favoritesViewModel.deleteFavArticles(it) }
                     },
                     tint = MaterialTheme.colorScheme.primary
                 )

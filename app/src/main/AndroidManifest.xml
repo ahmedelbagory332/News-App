@@ -30,6 +30,9 @@
         <activity
             android:name="com.example.presentation.screens.headlines.HeadLinesActivity"
             android:exported="false" />
+        <activity
+            android:name="com.example.presentation.screens.favorites.FavoritesActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
