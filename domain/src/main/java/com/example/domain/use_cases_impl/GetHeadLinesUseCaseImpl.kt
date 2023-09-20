@@ -15,10 +15,10 @@ class GetHeadLinesUseCaseImpl @Inject constructor(
 ) : GetHeadLinesUseCase {
 
 
-    override fun invoke(country: String, category: String): Flow<Resource<List<ArticlesModel>>> = flow {
+    override fun invoke(country: String, category: String,search: String): Flow<Resource<List<ArticlesModel>>> = flow {
         try {
             emit(Resource.Loading<List<ArticlesModel>>())
-            val headLines = getHeadLinesRepository.getRemoteHeadLines(country, category)
+            val headLines = getHeadLinesRepository.getRemoteHeadLines(country, category,search)
             cachedNewsRepository.cacheNews(headLines.articles)
             cachedNewsRepository.getAllCachedNews().collect {
                 emit(Resource.Success<List<ArticlesModel>>(it))

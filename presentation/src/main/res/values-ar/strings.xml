@@ -9,4 +9,7 @@
     <string name="head_lines">العناوين الرئيسية</string>
     <string name="there_is_no_description_click_and_open_article">لا يوجد وصف، انقر و أفتح المقالة</string>
     <string name="favorites_articles">المقالات المفضله</string>
+    <string name="search_on_articles">ابحث عن مقالات</string>
+    <string name="enter_article_name">اكتب اسم المقالة</string>
+    <string name="must_search_first">يجب عليك البحث اولا</string>
 </resources>

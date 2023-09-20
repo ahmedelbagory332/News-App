@@ -11,7 +11,7 @@ class GetHeadLinesRepositoryImpl @Inject constructor(private val api: NewsApi) :
     GetHeadLinesRepository {
 
 
-    override suspend fun getRemoteHeadLines(country: String, category: String): NewsModel {
-        return api.getHeadLines(country, category).toDomain()
+    override suspend fun getRemoteHeadLines(country: String, category: String,search: String): NewsModel {
+        return api.getHeadLines(country, category,search).toDomain()
     }
 }

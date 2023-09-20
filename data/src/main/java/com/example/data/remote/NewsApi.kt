@@ -11,5 +11,6 @@ interface NewsApi {
     suspend fun getHeadLines(
         @Query("country") country: String,
         @Query("category") category: String,
+        @Query("q") search: String="",
     ): HeadLinesJson
 }

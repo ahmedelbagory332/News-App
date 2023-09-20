@@ -32,6 +32,7 @@ import com.example.presentation.screens.favorites.FavoritesActivity
 import com.example.presentation.screens.headlines.component.ItemArticle
 import com.example.presentation.screens.headlines.component.UserFavCategories
 import com.example.presentation.screens.onboardingScreen.countries
+import com.example.presentation.screens.search.SearchActivity
 import com.example.presentation.theme.NewsAppTheme
 import com.example.presentation.theme.darkWhite
 import com.example.presentation.theme.grey
@@ -59,7 +60,10 @@ class HeadLinesActivity : ComponentActivity() {
         }
     }
 
-
+    override fun onStart() {
+        super.onStart()
+        viewModel.getOnBoardingStatus()
+    }
     @Composable
     fun HeadLinesScreen() {
         Column(
@@ -80,7 +84,7 @@ class HeadLinesActivity : ComponentActivity() {
                         }
 
                         IconButton(onClick = {
-
+                            startSearchActivity()
                         }) {
                             Icon(Icons.Filled.Search, "search")
                         }
@@ -140,7 +144,9 @@ class HeadLinesActivity : ComponentActivity() {
     private fun startFavoritesActivity() {
         startActivity(Intent(this, FavoritesActivity::class.java))
     }
-
+    private fun startSearchActivity() {
+        startActivity(Intent(this, SearchActivity::class.java))
+    }
 
 }
 

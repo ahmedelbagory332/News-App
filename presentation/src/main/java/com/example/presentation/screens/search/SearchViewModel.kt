@@ -1,4 +1,4 @@
-package com.example.presentation.screens.headlines
+package com.example.presentation.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -15,7 +15,6 @@ import com.example.domain.use_cases.GetFavArticlesUseCase
 import com.example.domain.use_cases.GetHeadLinesUseCase
 import com.example.domain.use_cases.GetOnBoardingStatusUseCase
 import com.example.domain.use_cases.SaveFavArticlesUseCase
-import com.example.presentation.screens.onboardingScreen.countries
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -24,10 +23,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-
-
 @HiltViewModel
-class HeadLinesViewModel @Inject constructor(
+class SearchViewModel @Inject constructor(
     private val getOnBoardingStatusUseCase: GetOnBoardingStatusUseCase,
     private val getHeadLinesUseCase: GetHeadLinesUseCase,
     private val getFavArticlesUseCase: GetFavArticlesUseCase,
@@ -52,33 +49,32 @@ class HeadLinesViewModel @Inject constructor(
     val favState: State<FavArticlesState>
         get() = _favState
 
-    fun setSelectedCategory(selectedCategory: String){
+    val showPlaceHolder = mutableStateOf(true)
+    val query = mutableStateOf("")
+
+    fun setSelectedCategory(selectedCategory: String) {
         _selectedCategory.value = selectedCategory
         _selectedCategory.value = _selectedCategory.value
     }
 
 
-
     init {
-
+        getOnBoardingStatus()
         getFavArticles()
     }
 
-      fun getOnBoardingStatus() {
+    private fun getOnBoardingStatus() {
         viewModelScope.launch {
             val result = getOnBoardingStatusUseCase.invoke()
             Log.d("TAG", " bego getOnBoardingStatusUseCase: ${result.firstTime}")
             Log.d("TAG", " bego getOnBoardingStatusUseCase: ${result.country}")
             _onBoardingStatus.value = result
-            _selectedCategory.value = onBoardingStatus.value.categories.first()
 
-
-            countries[result.country]?.let { getRemoteHeadLines(it,onBoardingStatus.value.categories.first()) }
         }
     }
 
-    fun getRemoteHeadLines(country: String, category: String) {
-        getHeadLinesUseCase(country, category).onEach { result ->
+    fun getSearchedArticles(country: String, category: String, search: String) {
+        getHeadLinesUseCase(country, category, search).onEach { result ->
             when (result) {
                 is Resource.Success -> {
 
@@ -87,11 +83,13 @@ class HeadLinesViewModel @Inject constructor(
                     )
 
                 }
+
                 is Resource.Error -> {
                     _state.value = HeadLinesState(
                         error = result.message ?: "An unexpected error happened"
                     )
                 }
+
                 is Resource.Loading -> {
                     _state.value = HeadLinesState(isLoading = true)
                 }
@@ -99,7 +97,8 @@ class HeadLinesViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
     }
-   private fun getFavArticles() {
+
+    private fun getFavArticles() {
         getFavArticlesUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
@@ -109,11 +108,13 @@ class HeadLinesViewModel @Inject constructor(
                     )
 
                 }
+
                 is Resource.Error -> {
                     _favState.value = FavArticlesState(
                         error = result.message ?: "An unexpected error happened"
                     )
                 }
+
                 is Resource.Loading -> {
                     _favState.value = FavArticlesState(isLoading = true)
                 }
@@ -122,15 +123,15 @@ class HeadLinesViewModel @Inject constructor(
 
     }
 
-      fun saveFavArticles(fav: ArticlesModel) {
+    fun saveFavArticles(fav: ArticlesModel) {
         viewModelScope.launch {
-             saveFavArticlesUseCase.invoke(fav)
+            saveFavArticlesUseCase.invoke(fav)
         }
     }
 
     fun deleteFavArticles(title: String) {
         viewModelScope.launch(Dispatchers.IO) {
-             deleteFavArticlesUseCase.invoke(title)
+            deleteFavArticlesUseCase.invoke(title)
         }
     }
 

@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface GetHeadLinesUseCase {
 
-    operator fun invoke(country: String, category: String): Flow<Resource<List<ArticlesModel>>>
+    operator fun invoke(country: String, category: String,search: String=""): Flow<Resource<List<ArticlesModel>>>
 }
