@@ -79,7 +79,7 @@ fun FavItemArticle(item: FavArticleModel, favoritesViewModel: FavoritesViewModel
                 Text(
                     modifier = Modifier.padding(5.dp),
                     text = getTime(it),
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 

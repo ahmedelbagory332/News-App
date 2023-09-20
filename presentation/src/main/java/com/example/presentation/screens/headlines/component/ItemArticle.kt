@@ -82,7 +82,7 @@ fun ItemArticle(item: ArticlesModel, headLinesViewModel: HeadLinesViewModel) {
                 Text(
                     modifier = Modifier.padding(5.dp),
                     text = getTime(it),
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 

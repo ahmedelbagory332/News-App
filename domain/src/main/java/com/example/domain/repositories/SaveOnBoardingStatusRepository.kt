@@ -8,4 +8,7 @@ interface SaveOnBoardingStatusRepository {
 
     fun getOnBoardingStatus():OnBoardingModel
 
+    fun saveCurrentLang(lang:String)
+    fun getCurrentLang():String
+
 }

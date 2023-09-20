@@ -1,6 +1,7 @@
 package com.example.presentation.screens.headlines
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,10 +23,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
 import com.example.presentation.screens.favorites.FavoritesActivity
@@ -40,6 +44,7 @@ import com.example.presentation.utils.ErrorHolder
 import com.example.presentation.utils.LoadingIndicator
 import com.example.presentation.utils.TopBar
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -64,48 +69,67 @@ class HeadLinesActivity : ComponentActivity() {
         super.onStart()
         viewModel.getOnBoardingStatus()
     }
+
     @Composable
     fun HeadLinesScreen() {
-        Column(
-            modifier = Modifier
-                .background(darkWhite)
-                .fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            Surface(shadowElevation = 3.dp) {
-                TopBar(
-                    title = stringResource(R.string.head_lines),
-                    menu = {
-                        IconButton(
-                            onClick = {
-                                startFavoritesActivity()
+        CompositionLocalProvider(LocalLayoutDirection provides if (viewModel.getLanguagePref() == "en") LayoutDirection.Ltr else LayoutDirection.Rtl) {
+            Column(
+                modifier = Modifier
+                    .background(darkWhite)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                Surface(shadowElevation = 3.dp) {
+                    TopBar(
+                        title = stringResource(R.string.head_lines),
+                        menu = {
+                            IconButton(
+                                onClick = {
+                                    if (viewModel.getLanguagePref() == "en") {
+                                        setLocale("ar");
+                                        viewModel.setLanguagePref("ar");
+                                    } else {
+                                        setLocale("en");
+                                        viewModel.setLanguagePref("en");
+                                    }
+                                    recreate()
+                                }) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.translate_icon),
+                                    contentDescription = "My Image",
+                                    modifier = Modifier.size(width = 30.dp, height = 30.dp)
+                                )
+                            }
+
+                            IconButton(
+                                onClick = {
+                                    startFavoritesActivity()
+                                }) {
+                                Icon(Icons.Filled.Favorite, "FavoriteBorder")
+                            }
+
+                            IconButton(onClick = {
+                                startSearchActivity()
                             }) {
-                            Icon(Icons.Filled.Favorite, "FavoriteBorder")
+                                Icon(Icons.Filled.Search, "search")
+                            }
+
                         }
-
-                        IconButton(onClick = {
-                            startSearchActivity()
-                        }) {
-                            Icon(Icons.Filled.Search, "search")
-                        }
-
-                    }
-                )
-            }
-
-            UserFavCategories(viewModel) { category ->
-                countries[viewModel.onBoardingStatus.value.country]?.let {
-                    viewModel.getRemoteHeadLines(
-                        it,
-                        category
                     )
                 }
+
+                UserFavCategories(viewModel) { category ->
+                    countries[viewModel.onBoardingStatus.value.country]?.let {
+                        viewModel.getRemoteHeadLines(
+                            it,
+                            category
+                        )
+                    }
+                }
+                HeadLines(viewModel)
+
             }
-            HeadLines(viewModel)
-
         }
-
-
     }
 
     @Composable
@@ -144,10 +168,28 @@ class HeadLinesActivity : ComponentActivity() {
     private fun startFavoritesActivity() {
         startActivity(Intent(this, FavoritesActivity::class.java))
     }
+
     private fun startSearchActivity() {
         startActivity(Intent(this, SearchActivity::class.java))
     }
 
+    private fun setLocale(lang: String) {
+        val config = resources.configuration
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+    }
+
+
+    override fun onResume() {
+        setLocale(viewModel.getLanguagePref())
+        super.onResume()
+    }
 }
 
 

@@ -11,9 +11,11 @@ import com.example.domain.model.OnBoardingModel
 import com.example.domain.states.FavArticlesState
 import com.example.domain.states.HeadLinesState
 import com.example.domain.use_cases.DeleteFavArticlesUseCase
+import com.example.domain.use_cases.GetCurrentLangUseCase
 import com.example.domain.use_cases.GetFavArticlesUseCase
 import com.example.domain.use_cases.GetHeadLinesUseCase
 import com.example.domain.use_cases.GetOnBoardingStatusUseCase
+import com.example.domain.use_cases.SaveCurrentLangUseCase
 import com.example.domain.use_cases.SaveFavArticlesUseCase
 import com.example.presentation.screens.onboardingScreen.countries
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,8 @@ class HeadLinesViewModel @Inject constructor(
     private val getFavArticlesUseCase: GetFavArticlesUseCase,
     private val deleteFavArticlesUseCase: DeleteFavArticlesUseCase,
     private val saveFavArticlesUseCase: SaveFavArticlesUseCase,
+    private val saveCurrentLangUseCase: SaveCurrentLangUseCase,
+    private val getCurrentLangUseCase: GetCurrentLangUseCase,
 ) : ViewModel() {
 
     private val _onBoardingStatus = mutableStateOf(OnBoardingModel())
@@ -133,5 +137,13 @@ class HeadLinesViewModel @Inject constructor(
              deleteFavArticlesUseCase.invoke(title)
         }
     }
+
+    fun setLanguagePref(lang: String) {
+        viewModelScope.launch {
+            saveCurrentLangUseCase(lang)
+        }
+    }
+
+    fun getLanguagePref():String = getCurrentLangUseCase()
 
 }

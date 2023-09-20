@@ -13,15 +13,19 @@ import com.example.domain.repositories.CachedNewsRepository
 import com.example.domain.repositories.GetHeadLinesRepository
 import com.example.domain.repositories.SaveOnBoardingStatusRepository
 import com.example.domain.use_cases.DeleteFavArticlesUseCase
+import com.example.domain.use_cases.GetCurrentLangUseCase
 import com.example.domain.use_cases.GetFavArticlesUseCase
 import com.example.domain.use_cases.GetHeadLinesUseCase
 import com.example.domain.use_cases.GetOnBoardingStatusUseCase
+import com.example.domain.use_cases.SaveCurrentLangUseCase
 import com.example.domain.use_cases.SaveFavArticlesUseCase
 import com.example.domain.use_cases.SaveOnBoardingStatusUseCase
 import com.example.domain.use_cases_impl.DeleteFavArticlesUseCaseImpl
+import com.example.domain.use_cases_impl.GetCurrentLangUseCaseImpl
 import com.example.domain.use_cases_impl.GetFavArticlesUseCaseImpl
 import com.example.domain.use_cases_impl.GetHeadLinesUseCaseImpl
 import com.example.domain.use_cases_impl.GetOnBoardingStatusUseCaseImpl
+import com.example.domain.use_cases_impl.SaveCurrentLangUseCaseImpl
 import com.example.domain.use_cases_impl.SaveFavArticlesUseCaseImpl
 import com.example.domain.use_cases_impl.SaveOnBoardingStatusUseCaseImpl
 import com.example.newsapp.BuildConfig
@@ -87,6 +91,16 @@ object AppModule {
     @Singleton
     fun GetOnBoardingStatusUseCase(saveOnBoardingStatusRepository: SaveOnBoardingStatusRepository): GetOnBoardingStatusUseCase =
         GetOnBoardingStatusUseCaseImpl(saveOnBoardingStatusRepository)
+
+    @Provides
+    @Singleton
+    fun SaveCurrentLangUseCase(saveOnBoardingStatusRepository: SaveOnBoardingStatusRepository): SaveCurrentLangUseCase =
+        SaveCurrentLangUseCaseImpl(saveOnBoardingStatusRepository)
+
+    @Provides
+    @Singleton
+    fun GetCurrentLangUseCase(saveOnBoardingStatusRepository: SaveOnBoardingStatusRepository): GetCurrentLangUseCase =
+        GetCurrentLangUseCaseImpl(saveOnBoardingStatusRepository)
 
     @Provides
     @Singleton
